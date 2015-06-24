@@ -1,0 +1,28 @@
+{
+  "name": "xin-app",
+  "version": "0.0.1",
+  "authors": [
+    "Ganesha <reekoheek@gmail.com>"
+  ],
+  "description": "Xin 2.0 Application web component.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "polim"
+  ],
+  "main": "xin-app.html",
+  "license": "MIT",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}
