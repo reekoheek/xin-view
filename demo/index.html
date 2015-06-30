@@ -3,14 +3,102 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>xin-app Demo</title>
+    <title>xin-view demo</title>
+    <script type="text/javascript">
+    // make sure to append trailing / for index.html
+    // you dont need this chunk if your not on index page
+    (function(root) {
+      'use strict';
+      if (location.href.slice(-10) !== 'index.html') {
+        location.href = location.href + (location.href.slice(-1) === '/' ? '' : '/') + 'index.html';
+      }
+    })(this);
+    </script>
+
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../xin-app.html">
+    <link rel="import" href="../../polymer/polymer.html">
+    <link rel="import" href="../../xin-app/xin-app.html">
+    <link rel="import" href="../xin-view.html">
+
+    <link rel="import" href="../../paper-header-panel/paper-header-panel.html">
+    <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
+    <link rel="import" href="../../iron-icons/maps-icons.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+
+    <style>
+      xin-view {
+        background-color: #ff0;
+      }
+
+      /*FIXME: hack*/
+      #mainContainer {
+        display: flex;
+        -ms-flex-direction: column;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+      }
+
+      paper-toolbar a {
+        padding: 8px;
+        color: white;
+      }
+    </style>
+
   </head>
-  <body class="fullbleed vertical layout" unresolved>
-    <xin-app>
-      <h2>Hello xin-app</h2>
-      <p>ini adalah anu</p>
+  <body unresolved class="fullbleed vertical layout">
+    <xin-app mode="history" class="flex vertical layout">
+      <template id="layout-main">
+        <paper-header-panel class="flex vertical layout">
+          <paper-toolbar>
+            <a href="index.html"><iron-icon icon="home"></iron-icon></a>
+            <div class="title"></div>
+            <a href="remote.html"><iron-icon icon="language"></iron-icon></a>
+            <a href="local.html"><iron-icon icon="maps:my-location"></iron-icon></a>
+            <a href="http://localhost:8081"><iron-icon icon="maps:flight"></iron-icon></a>
+            <a href="not-found.html"><iron-icon icon="block"></iron-icon></a>
+          </paper-toolbar>
+          <div>
+            <content></content>
+          </div>
+        </paper-header-panel>
+      </template>
+
+      <div viewport class="flex vertical layout">
+        <xin-view uri="/index.html" class="flex vertical layout" layout="layout-main">
+          <h1>h1</h1>
+          <p>p</p>
+          root
+        </xin-view>
+
+        <xin-view uri="/local.html" class="flex vertical layout" layout="layout-main">
+          local
+        </xin-view>
+      </div>
     </xin-app>
+
+    <script type="text/javascript">
+    (function(root) {
+      'use strict';
+
+      var baseEl = document.createElement('base');
+      baseEl.setAttribute('href', location.href);
+      document.querySelector('head').appendChild(baseEl);
+
+      var app = document.querySelector('xin-app');
+      app.setAttribute('root-uri', location.pathname.split('/').slice(0, -1).join('/') + '/');
+    })(this);
+    </script>
+
+    <script type="text/javascript">
+    (function(root) {
+      'use strict';
+      var appEl = document.querySelector('xin-app');
+      appEl.addEventListener('not-found', function() {
+        alert('404 Not Found');
+        appEl.navigate('/');
+      });
+    })(this);
+    </script>
   </body>
 </html>

@@ -1,17 +1,17 @@
 {
-  "name": "xin-app",
-  "version": "0.0.1",
+  "name": "xin-view",
+  "version": "2.0.0",
   "authors": [
     "Ganesha <reekoheek@gmail.com>"
   ],
-  "description": "Xin 2.0 Application web component.",
+  "description": "Xin 2.0 View.",
   "keywords": [
     "web-component",
     "web-components",
     "polymer",
     "polim"
   ],
-  "main": "xin-app.html",
+  "main": "xin-view.html",
   "license": "MIT",
   "ignore": [
     "/.*",
@@ -19,7 +19,8 @@
     "/demo/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "xin-app": "xinix-technology/xin-app#~2.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

@@ -1,0 +1,130 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`xin-view` is a unit that represent page or a single view.
+
+Example:
+
+    <xin-view uri="/">
+      This is root view
+    </xin-view>
+
+    <xin-view uri="/foo">
+      <h1>Foo</h1>
+      <p>This is foo view</p>
+    </xin-view>
+
+    <xin-view uri="/bar">
+      This is bar view
+    </xin-view>
+
+@demo
+-->
+<dom-module id="xin-view">
+  <template>
+    <content></content>
+  </template>
+
+  <style>
+    :host {
+      box-sizing: border-box;
+      display: block;
+    }
+
+    :host(.view-hidden) {
+      display: none!important;
+    }
+  </style>
+</dom-module>
+
+<script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'xin-view',
+
+      created: function() {
+        var layout = this.getAttribute('layout'),
+          layoutEl;
+        if (layout) {
+          layoutEl = document.getElementById(layout);
+          if (layoutEl) {
+            var content = document.createDocumentFragment();
+            Polymer.dom(this.root).childNodes.forEach(function(node) {
+              content.appendChild(node);
+            });
+
+            var t = document.importNode(layoutEl, true);
+            Polymer.dom(this.root).appendChild(this.instanceTemplate(t));
+            Polymer.dom(this.root).querySelectorAll('content').forEach(function(el) {
+              if (el.select) {
+
+                var rep = content.querySelector(el.select);
+                if (rep) {
+                  Polymer.dom(el.parentNode).insertBefore(rep, el);
+                }
+              } else {
+                Polymer.dom(el.parentNode).insertBefore(content, el);
+              }
+            }.bind(this));
+          }
+        }
+      },
+
+      ready: function() {
+        console.log('ready');
+      },
+
+      attached: function() {
+        var classList = Polymer.dom(this).classList;
+        classList.remove('view-focused');
+        classList.add('view-hidden');
+
+        var appEl = this.parentElement;
+        while(appEl.nodeName !== 'XIN-APP' && appEl.nodeName !== 'HTML') {
+          appEl = appEl.parentElement;
+        }
+        this.app = appEl;
+
+        if (this.parentElement.add) {
+          this.parentElement.add(this);
+        }
+
+        this.async(function() {
+          this.app.route(this.uri, this.focus.bind(this));
+            this.dispatchEvent(new CustomEvent('routed'));
+        });
+      },
+
+      properties: {
+        /**
+         * Attach this view to route with specified URI
+         * @type {String}
+         */
+        uri: String,
+      },
+
+      /**
+       * Set view to be focused
+       */
+      focus: function() {
+        if (this.parentElement.setFocus) {
+          this.parentElement.setFocus(this);
+        } else {
+          var parent = Polymer.dom(this.parentElement);
+          parent.children.forEach(function(el) {
+            var classList = Polymer.dom(el).classList;
+            classList.remove('view-focused');
+            classList.add('view-hidden');
+          });
+          var classList = Polymer.dom(this).classList;
+          classList.add('view-focused');
+          classList.remove('view-hidden');
+        }
+      }
+    });
+
+  })(this);
+</script>
