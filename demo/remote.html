@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>xin-view demo</title>
+    <script type="text/javascript">
+    // make sure to append trailing / for index.html
+    // you dont need this chunk if your not on index page
+    // (function(root) {
+    //   'use strict';
+    //   if (location.href.slice(-10) !== 'index.html') {
+    //     location.href = location.href + (location.href.slice(-1) === '/' ? '' : '/') + 'index.html';
+    //   }
+    // })(this);
+    </script>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../xin-app/xin-app.html">
+    <link rel="import" href="../xin-view.html">
+
+    <link rel="import" href="../../paper-header-panel/paper-header-panel.html">
+    <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+
+    <style>
+      xin-view {
+        background-color: #ff0;
+      }
+
+      /*FIXME: hack*/
+      #mainContainer {
+        display: flex;
+        -ms-flex-direction: column;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body unresolved class="fullbleed vertical layout">
+    <xin-app mode="history" class="flex vertical layout">
+      <paper-header-panel class="flex vertical layout">
+        <paper-toolbar>
+          <div>
+            <a href="index.html">index</a>
+            <a href="remote.html">remote</a>
+            <a href="local.html">local</a>
+            <a href="http://localhost:8081">outside</a>
+            <a href="not-found.html">not-found</a>
+          </div>
+        </paper-toolbar>
+        <div viewport class="flex vertical layout">
+          <xin-view uri="/remote.html" class="flex vertical layout">
+            remote
+          </xin-view>
+
+          <xin-view uri="/local.html" class="flex vertical layout">
+            local
+          </xin-view>
+        </div>
+      </paper-header-panel>
+
+    </xin-app>
+    <script type="text/javascript">
+    (function(root) {
+      'use strict';
+
+      var baseEl = document.createElement('base');
+      baseEl.setAttribute('href', location.href);
+      document.querySelector('head').appendChild(baseEl);
+
+      var app = document.querySelector('xin-app');
+      app.setAttribute('root-uri', location.pathname.split('/').slice(0, -1).join('/') + '/');
+    })(this);
+    </script>
+  </body>
+</html>
