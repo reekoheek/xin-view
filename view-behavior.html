@@ -1,0 +1,124 @@
+<link rel="import" href="../xin-app/container-behavior.html">
+
+<style type="text/css">
+  .xin-view {
+    box-sizing: border-box;
+    display: none!important;
+  }
+
+  .xin-view.xin-view-visible {
+    display: block!important;
+  }
+</style>
+
+<script type="text/javascript">
+(function(root) {
+  'use strict';
+
+  var ViewBehavior = {
+    created: function() {
+      this.classList.add('xin-view');
+    },
+
+    attached: function() {
+      var classList = Polymer.dom(this).classList;
+      classList.remove('xin-view-focus');
+      classList.remove('xin-view-visible');
+
+      if (this.parentElement.add) {
+        this.parentElement.add(this);
+      }
+
+      this.async(function() {
+        this._parameterNames = (this.uri.match(/((\(\?)?:\w+|\*\w+)/g) || []).map(function(param) {
+          return param.substr(1);
+        });
+
+        this.log('routed', this.uri);
+        this.app$.route(this.uri, this.focus.bind(this));
+        this.fire('routed');
+      });
+    },
+
+    properties: {
+      /**
+       * Attach this view to route with specified URI
+       * @type {String}
+       */
+      uri: String,
+
+      src: {
+        type: String,
+        observer: '_srcChanged'
+      },
+
+      parameters: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      }
+    },
+
+    listeners: {
+      'focus': '_fetchDataFocused',
+    },
+
+    _fetchDataFocused: function() {
+      // Array.prototype.forEach.call(this.querySelectorAll('xin-cursor'), function(element) {
+      //   element.fetch();
+      // });
+      Polymer.dom(this.root).querySelectorAll('xin-cursor, xin-model').forEach(function(element) {
+        element.fetch();
+      });
+    },
+
+    /**
+     * Set view to be focused
+     */
+    focus: function() {
+      var args = arguments;
+      var parameters = {};
+      this._parameterNames.forEach(function(name, index) {
+        // console.log(arguments, index, arguments[index])
+        parameters[name] = args[index];
+      });
+      this.set('parameters', parameters);
+
+      if (this.parentElement.setFocus) {
+        this.parentElement.setFocus(this);
+      } else {
+        var parent = Polymer.dom(this.parentElement);
+        parent.children.forEach(function(element) {
+          element.setFocus(false);
+          element.setVisible(false);
+        });
+
+        this.setFocus(true);
+        this.setVisible(true);
+      }
+    },
+
+    setVisible: function(visible) {
+      this.toggleClass('xin-view-visible', visible);
+      this.fire(visible ? 'show' : 'hide');
+    },
+
+    setFocus: function(focus) {
+      this.toggleClass('xin-view-focus', focus);
+      this.fire(focus ? 'focus' : 'blur');
+    },
+
+    _srcChanged: function() {
+      this.importHref(this.src, function(evt) {
+          var body$ = Polymer.dom(evt.target.import.body);
+          body$.childNodes.forEach(function(node) {
+            Polymer.dom(this).appendChild(node);
+          }.bind(this));
+        }.bind(this));
+    }
+  };
+
+  xin.ViewBehavior = [xin.ContainerBehavior, ViewBehavior];
+})(this);
+</script>
