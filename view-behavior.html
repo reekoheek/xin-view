@@ -1,12 +1,12 @@
 <link rel="import" href="../xin-app/container-behavior.html">
 
 <style type="text/css">
-  .xin-view {
+  .xin-view-behavior {
     box-sizing: border-box;
     display: none!important;
   }
 
-  .xin-view.xin-view-visible {
+  .xin-view-behavior.xin-view-visible {
     display: block!important;
   }
 </style>
@@ -17,10 +17,64 @@
 
   var ViewBehavior = {
     created: function() {
-      this.classList.add('xin-view');
+      this.classList.add('xin-view-behavior');
+    },
+
+    // required for layout
+    _getRootDataHost: function() {
+      return this;
+    },
+
+    ready: function() {
+      this._applyLayout();
+    },
+
+    _applyLayout: function() {
+      this.async(function() {
+        if (typeof this.layout === 'string') {
+          this.set('layout', root[this.layout]);
+        }
+
+        if (this.layout) {
+          this.templatize(this.layout);
+          this._layoutInstance = this.stamp();
+
+          var layoutEffects = this._layoutInstance._propertyEffects;
+          if (layoutEffects) {
+            var layoutInstance = this._layoutInstance;
+            var _copyToLayoutInstance = function(property, value) {
+              layoutInstance.set(property, value);
+            };
+
+            for(var property in layoutEffects) {
+              // if (!Object.getOwnPropertyDescriptor(this, property) || !Object.getOwnPropertyDescriptor(xin.getPrototypeOf(this), property)) {
+              if (!(property in this)) {
+                Polymer.Bind._createAccessors(this, property, [{
+                  kind: 'function',
+                  effect: _copyToLayoutInstance
+                }]);
+              }
+            }
+          }
+
+          var root$ = Polymer.dom(this.root);
+          root$.childNodes.forEach(function(node) {
+            root$.removeChild(node);
+          });
+          root$.children.forEach(function(node) {
+            root$.removeChild(node);
+          });
+          root$.appendChild(this._layoutInstance.root);
+
+        }
+      });
     },
 
     attached: function() {
+      if (!this.uri) {
+        throw new Error('View ' + this.nodeName + ' should has uri defined!');
+      }
+
       var classList = Polymer.dom(this).classList;
       classList.remove('xin-view-focus');
       classList.remove('xin-view-visible');
@@ -57,7 +111,9 @@
         value: function() {
           return {};
         }
-      }
+      },
+
+      layout: Object,
     },
 
     listeners: {
@@ -119,6 +175,6 @@
     }
   };
 
-  xin.ViewBehavior = [xin.ContainerBehavior, ViewBehavior];
+  xin.ViewBehavior = [Polymer.Templatizer, xin.ContainerBehavior, ViewBehavior];
 })(this);
 </script>
