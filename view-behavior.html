@@ -117,16 +117,17 @@
     },
 
     listeners: {
-      'focus': '_fetchDataFocused',
+      'focus': '_focused',
     },
 
-    _fetchDataFocused: function() {
-      // Array.prototype.forEach.call(this.querySelectorAll('xin-cursor'), function(element) {
-      //   element.fetch();
-      // });
+    _focused: function() {
       Polymer.dom(this.root).querySelectorAll('xin-cursor, xin-model').forEach(function(element) {
         element.fetch();
       });
+
+      if (typeof this.focused === 'function') {
+        return this.focused.apply(this, arguments);
+      }
     },
 
     /**
